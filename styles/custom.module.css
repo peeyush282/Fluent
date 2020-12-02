@@ -1,0 +1,65 @@
+.h1 {
+  text-align: center;
+}
+
+.wrapper {
+  max-width: 1200px;
+  padding: 0 16px;
+  margin: auto;
+}
+
+.navbar {
+  padding: 20px;
+  margin-bottom: 20px;
+  background: #008cba;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbarBrand {
+  color: #fff;
+  font-size: medium;
+  font-weight: 700;
+}
+
+.create {
+  color: #fff;
+  /* font-size: 20px; */
+}
+
+.navbarBrand:hover,
+.create:hover {
+  color: #fff;
+}
+
+/* index file css */
+
+.grid {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  padding: 40px 100px 40px 200px;
+}
+
+.col {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.dropdownContainer {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  padding-left: 20px;
+  /* border: 1px solid; */
+}
+
+.card {
+  margin-bottom: 20px;
+
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
