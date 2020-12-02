@@ -1,11 +1,8 @@
-import Head from "next/head";
 import axios from "axios";
 import {
   Grid,
   Icon,
   Dropdown,
-  Dimmer,
-  Loader,
   Modal,
   Header,
   Button,
@@ -19,13 +16,69 @@ import styles from "../styles/custom.module.css";
 const Index = () => {
   const [data, setData] = useState([]);
   const [data1, setData1] = useState([]);
-
-  const [filterdata, setFilterData] = useState([]);
-  const [copyfilterdata, setCopyFilterData] = useState([]);
   const [open, setOpen] = useState(false);
   const [favouriteList, setFavouriteList] = useState([]);
   const [favList, setList] = useState([]);
   const [fildata1, setFileredData1] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+
+  const initialdataFiltered = {
+    name: "",
+    status: "",
+    species: "",
+    type: "",
+    gender: "",
+  };
+
+  const [datafiltered, setDataFiltered] = useState(initialdataFiltered);
+  const [filteredData, setfilteredData] = useState([]);
+
+  useEffect(() => {
+    let clonedata = data1;
+    if (datafiltered.name != "") {
+      clonedata = clonedata.filter((fdata) =>
+        fdata.name.includes(datafiltered.name)
+      );
+      if (clonedata.length === 0) {
+        setOpenModal(true);
+      }
+    }
+
+    if (datafiltered.status != "") {
+      clonedata = clonedata.filter(
+        (fdata) => fdata.status === datafiltered.status
+      );
+      if (clonedata.length === 0) {
+        setOpenModal(true);
+      }
+    }
+
+    if (datafiltered.species != "") {
+      clonedata = clonedata.filter(
+        (fdata) => fdata.species === datafiltered.species
+      );
+      if (clonedata.length === 0) {
+        setOpenModal(true);
+      }
+    }
+
+    if (datafiltered.type != "") {
+      clonedata = clonedata.filter((fdata) => fdata.type === datafiltered.type);
+      if (clonedata.length === 0) {
+        setOpenModal(true);
+      }
+    }
+
+    if (datafiltered.gender != "") {
+      clonedata = clonedata.filter(
+        (fdata) => fdata.gender === datafiltered.gender
+      );
+      if (clonedata.length === 0) {
+        setOpenModal(true);
+      }
+    }
+    setfilteredData(clonedata);
+  }, [datafiltered]);
 
   const filterCharName = (character) => {
     const nameValues = character.name.split(" ");
@@ -40,60 +93,21 @@ const Index = () => {
   };
 
   const filterByName = (e, { value }) => {
-    let copydata = data1;
-    copydata = data1.filter((fdata) => fdata.name.includes(value));
-    setFilterData(copydata);
-    setCopyFilterData(copydata);
+    setDataFiltered({ ...datafiltered, name: value });
   };
 
   const filterByGender = (e, { value }) => {
-    let copydata = filterdata;
-    if (copydata.length > 0) {
-      let results = copydata.filter((fdata) => fdata.gender === value);
-      setFilterData(results);
-      if (results.length > 0) {
-        setCopyFilterData(results);
-      } else {
-        setFilterData(copyfilterdata);
-      }
-    }
+    setDataFiltered({ ...datafiltered, gender: value });
   };
 
   const filterByStatus = (e, { value }) => {
-    if (filterdata.length > 0) {
-      let results = filterdata.filter((fdata) => fdata.status === value);
-      setFilterData(results);
-
-      if (results.length > 0) {
-        setCopyFilterData(results);
-      } else {
-        setFilterData(copyfilterdata);
-      }
-    }
+    setDataFiltered({ ...datafiltered, status: value });
   };
   const filterBySpecies = (e, { value }) => {
-    if (filterdata.length > 0) {
-      let results = filterdata.filter((fdata) => fdata.species === value);
-      setFilterData(results);
-
-      if (results.length > 0) {
-        setCopyFilterData(results);
-      } else {
-        setFilterData(copyfilterdata);
-      }
-    }
+    setDataFiltered({ ...datafiltered, species: value });
   };
   const filterByType = (e, { value }) => {
-    if (filterdata.length > 0) {
-      let results = filterdata.filter((fdata) => fdata.type === value);
-      setFilterData(results);
-
-      if (results.length > 0) {
-        setCopyFilterData(results);
-      } else {
-        setFilterData(copyfilterdata);
-      }
-    }
+    setDataFiltered({ ...datafiltered, type: value });
   };
 
   const showModal = () => {
@@ -177,8 +191,23 @@ const Index = () => {
     { key: "female", text: "Female", value: "Female" },
   ];
 
+  console.log("filteredData", filteredData);
+
   return (
     <div>
+      {openModal && (
+        <Modal
+          closeIcon
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          onOpen={() => setOpenModal(true)}
+        >
+          <Header icon="info circle" content="Messages" />
+          <Modal.Content>
+            <p>NO results found!</p>
+          </Modal.Content>
+        </Modal>
+      )}
       {open && (
         <Modal
           closeIcon
@@ -243,7 +272,7 @@ const Index = () => {
         </div>
       </div>
       <div className={styles.grid}>
-        {filterdata.length == 0 ? (
+        {filteredData.length === 0 ? (
           <Grid>
             <Grid.Row>
               {data1 &&
@@ -253,7 +282,7 @@ const Index = () => {
                       if (character.id == item.fid) {
                         return (
                           <Grid.Column
-                            width={5}
+                            // width={3}
                             key={index}
                             className={styles.col}
                           >
@@ -290,7 +319,7 @@ const Index = () => {
               {fildata1 != [] &&
                 fildata1.map((character, index) => {
                   return (
-                    <Grid.Column width={5} key={index} className={styles.col}>
+                    <Grid.Column key={index} className={styles.col}>
                       <CardComponent
                         image={changeImage(character.image)}
                         header={character.name}
@@ -322,9 +351,9 @@ const Index = () => {
           </Grid>
         ) : (
           <Grid>
-            {filterdata.map((character, index) => {
+            {filteredData.map((character, index) => {
               return (
-                <Grid.Column width={5} key={index} className={styles.col}>
+                <Grid.Column key={index} className={styles.col}>
                   <CardComponent
                     image={changeImage(character.image)}
                     header={character.name}
